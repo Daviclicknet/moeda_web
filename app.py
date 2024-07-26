@@ -51,7 +51,7 @@ def plot_exchange_rate_history(history_data):
             continue
     
     if dates and rates:
-        fig, ax = plt.subplots(figsize=(8, 5))
+        fig, ax = plt.subplots(figsize=(20, 6))
         ax.plot(dates, rates, marker='o')
         ax.set_title('Histórico da Taxa de Câmbio')
         ax.set_xlabel('Data')
