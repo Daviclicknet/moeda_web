@@ -1,0 +1,4 @@
+Flask
+matplotlib
+requests
+python-dotenv

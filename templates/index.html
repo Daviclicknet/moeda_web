@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor de Moedas</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1 class="custom-title">Conversor de Moedas</h1>
+        <form id="convert-form" class="needs-validation" novalidate>
+            <div class="form-row">
+                <div class="col-md-4 mb-3">
+                    <label for="amount">Quantidade</label>
+                    <input type="number" class="form-control" id="amount" name="amount" required>
+                    <div class="invalid-feedback">
+                        Por favor, insira um valor numérico válido.
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="base_currency">Moeda de origem</label>
+                    <select class="custom-select" id="base_currency" name="base_currency" required>
+                        <option value="" disabled selected>Escolha...</option>
+                        {% for currency in currencies %}
+                            <option value="{{ currency }}">{{ currency }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="invalid-feedback">
+                        Por favor, selecione uma moeda de origem.
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="target_currency">Moeda de destino</label>
+                    <select class="custom-select" id="target_currency" name="target_currency" required>
+                        <option value="" disabled selected>Escolha...</option>
+                        {% for currency in currencies %}
+                            <option value="{{ currency }}">{{ currency }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="invalid-feedback">
+                        Por favor, selecione uma moeda de destino.
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-primary" type="submit">Converter</button>
+        </form>
+        <div id="result" class="result"></div>
+        <div class="chart-container">
+            <img id="chart" src="" alt="Gráfico da Taxa de Câmbio">
+        </div>
+    </div>
+
+    <!-- Bootstrap JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        // Form validation
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                var forms = document.getElementsByClassName('needs-validation');
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+
+        document.getElementById('convert-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            fetch('/convert', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('result').textContent = data.error;
+                } else {
+                    document.getElementById('result').textContent = `Resultado: ${data.result}`;
+                    document.getElementById('chart').src = `data:image/png;base64,${data.chart}`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
